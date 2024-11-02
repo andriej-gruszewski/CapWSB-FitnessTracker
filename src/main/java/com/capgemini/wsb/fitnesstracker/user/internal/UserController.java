@@ -35,6 +35,13 @@ class UserController {
                 .map(userSimpleMapper::toSimpleDto)
                 .toList();
     }
+    @GetMapping("/email")
+    public List<UserEmailSimpleDto> getUserByEmail(@RequestParam String email) {
+        return userService.getUserByEmailIgnoreCase(email)
+                .stream()
+                .map(userEmailSimpleMapper::toEmailSimpleDto)
+                .toList();
+    }
 
     @GetMapping("/{userId}")
     public UserDto getUser(@PathVariable Long userId) {
@@ -43,13 +50,6 @@ class UserController {
                 .orElseThrow(() -> new IllegalArgumentException("User with ID: " + userId + " not found"));
     }
 
-    @GetMapping("/email")
-    public List<UserEmailSimpleDto> getUserByEmail(@RequestParam String email) {
-        return userService.getUserByEmailIgnoreCase(email)
-                .stream()
-                .map(userEmailSimpleMapper::toEmailSimpleDto)
-                .toList();
-    }
 
     @GetMapping("/older/{time}")
     public List<UserDto> getUsersOlderThan(@PathVariable LocalDate time) {
@@ -72,6 +72,16 @@ class UserController {
         return null;
     }
 
+    @DeleteMapping("/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable Long userId) {
+        try {
+            userService.deleteUser(userId);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Cannot delete user with ID: " + userId + " with error: " + e.getMessage());
+        }
+    }
+
     @PutMapping("/{userId}")
     public User updateUser(@PathVariable Long userId, @RequestBody UserDto userDto) {
         try {
@@ -84,13 +94,5 @@ class UserController {
         }
     }
 
-    @DeleteMapping("/{userId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable Long userId) {
-        try {
-            userService.deleteUser(userId);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Cannot delete user with ID: " + userId + " with error: " + e.getMessage());
-        }
-    }
+    
 }
