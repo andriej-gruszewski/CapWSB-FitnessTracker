@@ -1,5 +1,7 @@
 package com.capgemini.wsb.fitnesstracker.user.internal;
 
+import com.capgemini.wsb.fitnesstracker.user.api.SearchUserDto;
+import com.capgemini.wsb.fitnesstracker.user.api.SimpleUserDto;
 import com.capgemini.wsb.fitnesstracker.user.api.User;
 import org.springframework.stereotype.Component;
 
@@ -22,23 +24,29 @@ class UserMapper {
                 userDto.email());
     }
 
-    User toUpdateEntity(UserDto userDto, User user) {
-        if(userDto.firstName() != null) {
-            user.setFirstName(userDto.firstName());
-        }
+    SearchUserDto toSearchUserDto(User user) {
+        return new SearchUserDto(
+                user.getId(),
+                user.getEmail(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getBirthdate()
+        );
+    }
 
-        if(userDto.lastName() != null) {
-            user.setLastName(userDto.lastName());
+    User toUpdateEntity(User existingUser, UserDto userDto) {
+        if (userDto.firstName() != null) {
+            existingUser.setFirstName(userDto.firstName());
         }
-
-        if(userDto.birthdate() != null) {
-            user.setBirthdate(userDto.birthdate());
+        if (userDto.lastName() != null) {
+            existingUser.setLastName(userDto.lastName());
         }
-
-        if(userDto.email() != null) {
-            user.setEmail(userDto.email());
+        if (userDto.birthdate() != null) {
+            existingUser.setBirthdate(userDto.birthdate());
         }
-
-        return user;
+        if (userDto.email() != null) {
+            existingUser.setEmail(userDto.email());
+        }
+        return existingUser;
     }
 }
